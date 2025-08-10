@@ -1,2 +1,149 @@
+# =============================================================================
+# Configuração de Serviços OpenRC - Alpine Linux
+# =============================================================================
+# Este arquivo define os serviços que serão habilitados para iniciar no boot
+
+# =============================================================================
+# SERVIÇOS ESSENCIAIS (sempre habilitados)
+# =============================================================================
+
+# Rede
+networking
+
+# SSH (se habilitado)
 sshd
-wpa_supplicant 
+
+# =============================================================================
+# SERVIÇOS DE SISTEMA (recomendados)
+# =============================================================================
+
+# Cron (agendamento de tarefas)
+cronie
+
+# Syslog (logs do sistema)
+syslog-ng
+
+# NTP (sincronização de tempo)
+chronyd
+
+# =============================================================================
+# SERVIÇOS DE CONTAINER (se Docker instalado)
+# =============================================================================
+
+# Docker
+docker
+
+# =============================================================================
+# SERVIÇOS DE REDE (opcionais)
+# =============================================================================
+
+# Firewall
+ufw
+
+# DHCP client
+dhcpcd
+
+# =============================================================================
+# SERVIÇOS DE MONITORAMENTO (opcionais)
+# =============================================================================
+
+# Prometheus
+prometheus
+
+# Grafana
+grafana
+
+# =============================================================================
+# SERVIÇOS WEB (opcionais)
+# =============================================================================
+
+# Nginx
+nginx
+
+# Apache
+apache2
+
+# =============================================================================
+# SERVIÇOS DE BANCO DE DADOS (opcionais)
+# =============================================================================
+
+# PostgreSQL
+postgresql
+
+# MySQL
+mysql
+
+# =============================================================================
+# SERVIÇOS DE BACKUP (opcionais)
+# =============================================================================
+
+# Rsync daemon
+rsyncd
+
+# =============================================================================
+# SERVIÇOS DE AUTOMAÇÃO (opcionais)
+# =============================================================================
+
+# Ansible
+ansible
+
+# =============================================================================
+# SERVIÇOS PERSONALIZADOS (exemplos)
+# =============================================================================
+
+# Para adicionar serviços personalizados, crie scripts em /etc/init.d/
+# e adicione-os aqui:
+
+# meu-servico
+# aplicacao-customizada
+
+# =============================================================================
+# NOTAS DE CONFIGURAÇÃO
+# =============================================================================
+
+# 1. Serviços são habilitados na ordem listada
+# 2. Dependências são resolvidas automaticamente pelo OpenRC
+# 3. Para desabilitar um serviço, comente a linha com #
+# 4. Para adicionar um novo serviço, adicione o nome na lista
+
+# =============================================================================
+# EXEMPLO DE CONFIGURAÇÃO PERSONALIZADA
+# =============================================================================
+
+# Para um servidor web básico:
+# networking
+# sshd
+# nginx
+# mysql
+
+# Para um servidor de containers:
+# networking
+# sshd
+# docker
+# cronie
+
+# Para um servidor de monitoramento:
+# networking
+# sshd
+# prometheus
+# grafana
+# chronyd
+
+# =============================================================================
+# TROUBLESHOOTING
+# =============================================================================
+
+# Para verificar status dos serviços:
+# rc-status
+
+# Para iniciar um serviço manualmente:
+# rc-service nome-do-servico start
+
+# Para parar um serviço:
+# rc-service nome-do-servico stop
+
+# Para reiniciar um serviço:
+# rc-service nome-do-servico restart
+
+# Para ver logs de um serviço:
+# rc-service nome-do-servico status 

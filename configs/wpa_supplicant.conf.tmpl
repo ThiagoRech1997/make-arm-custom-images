@@ -1,8 +1,103 @@
-ctrl_interface=/run/wpa_supplicant
-country=${WIFI_COUNTRY}
+# =============================================================================
+# Configuração Wi-Fi - wpa_supplicant.conf
+# =============================================================================
+# Template para configuração automática de Wi-Fi no Alpine Linux
+# Este arquivo será processado pelo script de build para substituir variáveis
 
+# Configuração do país (importante para conformidade regulatória)
+country={{ WIFI_COUNTRY }}
+
+# Interface de controle
+ctrl_interface=/var/run/wpa_supplicant
+ctrl_interface_group=0
+
+# Configuração da rede Wi-Fi
 network={
-    ssid="${WIFI_SSID}"
-    psk="${WIFI_PSK}"
+    ssid="{{ WIFI_SSID }}"
+    psk="{{ WIFI_PASSWORD }}"
     key_mgmt=WPA-PSK
-} 
+    # Configurações adicionais opcionais:
+    # scan_ssid=1                    # Para redes ocultas
+    # proto=RSN                      # WPA2
+    # pairwise=CCMP                  # AES
+    # group=CCMP                     # AES
+    # auth_alg=OPEN                  # Autenticação aberta
+}
+
+# =============================================================================
+# CONFIGURAÇÕES ADICIONAIS (OPCIONAIS)
+# =============================================================================
+
+# Para múltiplas redes, adicione mais blocos network={}:
+
+# network={
+#     ssid="Rede_Backup"
+#     psk="senha_backup"
+#     key_mgmt=WPA-PSK
+#     priority=1
+# }
+
+# network={
+#     ssid="Rede_Principal"
+#     psk="senha_principal"
+#     key_mgmt=WPA-PSK
+#     priority=2
+# }
+
+# =============================================================================
+# CONFIGURAÇÕES AVANÇADAS
+# =============================================================================
+
+# Para redes empresariais (WPA-EAP):
+# network={
+#     ssid="Rede_Empresarial"
+#     key_mgmt=IEEE8021X
+#     eap=PEAP
+#     identity="usuario"
+#     password="senha"
+#     phase2="auth=MSCHAPV2"
+# }
+
+# Para redes abertas (sem senha):
+# network={
+#     ssid="Rede_Aberta"
+#     key_mgmt=NONE
+# }
+
+# Para redes WEP (não recomendado):
+# network={
+#     ssid="Rede_WEP"
+#     key_mgmt=NONE
+#     wep_key0="chave_wep"
+#     wep_tx_keyidx=0
+# }
+
+# =============================================================================
+# NOTAS DE SEGURANÇA
+# =============================================================================
+
+# 1. Este arquivo contém senhas em texto plano
+# 2. Certifique-se de que as permissões estão corretas (600)
+# 3. Considere usar chaves pré-compartilhadas para maior segurança
+# 4. Para ambientes de produção, considere usar certificados
+
+# =============================================================================
+# VARIÁVEIS DISPONÍVEIS PARA SUBSTITUIÇÃO
+# =============================================================================
+
+# {{ WIFI_SSID }}      - Nome da rede Wi-Fi
+# {{ WIFI_PASSWORD }}  - Senha da rede Wi-Fi
+# {{ WIFI_COUNTRY }}   - Código do país (ex: BR, US, GB)
+
+# =============================================================================
+# EXEMPLO DE USO
+# =============================================================================
+
+# Para usar este template, configure as variáveis no arquivo .env:
+#
+# WIFI_SSID="MinhaRede"
+# WIFI_PASSWORD="MinhaSenha123"
+# WIFI_COUNTRY="BR"
+#
+# O script de build substituirá automaticamente as variáveis
+# e criará o arquivo wpa_supplicant.conf final. 

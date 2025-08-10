@@ -1,11 +1,144 @@
-bash
-busybox-extras
-e2fsprogs
-haveged
-openssh
-wpa_supplicant
-wireless-tools
+# =============================================================================
+# Lista de Pacotes para Alpine Linux - Raspberry Pi 3B
+# =============================================================================
+# Este arquivo define os pacotes que serão instalados na imagem personalizada
+
+# =============================================================================
+# PACOTES ESSENCIAIS (sempre instalados)
+# =============================================================================
+
+# Sistema básico
 ca-certificates
 curl
+wget
+bash
+sudo
+
+# Ferramentas de rede
+net-tools
+iproute2
+iw
+wireless-tools
+
+# Ferramentas de sistema
+htop
+vim
 nano
-git 
+tree
+git
+
+# =============================================================================
+# PACOTES DE DESENVOLVIMENTO (opcionais)
+# =============================================================================
+
+# Docker e containers
+docker
+docker-compose
+
+# Ferramentas de desenvolvimento
+build-base
+python3
+nodejs
+npm
+
+# =============================================================================
+# PACOTES DE SERVIÇOS (opcionais)
+# =============================================================================
+
+# Servidor web
+nginx
+apache2
+
+# Banco de dados
+sqlite
+postgresql
+mysql
+
+# Monitoramento
+prometheus
+grafana
+
+# =============================================================================
+# PACOTES DE UTILITÁRIOS (opcionais)
+# =============================================================================
+
+# Backup e compressão
+rsync
+tar
+gzip
+bzip2
+xz
+
+# Monitoramento de sistema
+iotop
+iftop
+nethogs
+
+# Ferramentas de rede avançadas
+tcpdump
+nmap
+netcat-openbsd
+
+# =============================================================================
+# PACOTES DE SEGURANÇA (recomendados)
+# =============================================================================
+
+# Firewall
+ufw
+iptables
+
+# Criptografia
+openssl
+gnupg
+
+# Auditoria
+audit
+tripwire
+
+# =============================================================================
+# PACOTES DE MÍDIA (opcionais)
+# =============================================================================
+
+# Reprodução de mídia
+ffmpeg
+vlc
+mpv
+
+# Processamento de imagem
+imagemagick
+graphicsmagick
+
+# =============================================================================
+# PACOTES DE AUTOMAÇÃO (opcionais)
+# =============================================================================
+
+# Ansible
+ansible
+
+# Cron e agendamento
+cronie
+at
+
+# =============================================================================
+# PACOTES DE MONITORAMENTO (opcionais)
+# =============================================================================
+
+# Logs
+logrotate
+syslog-ng
+
+# Métricas
+collectd
+telegraf
+
+# =============================================================================
+# NOTAS DE INSTALAÇÃO
+# =============================================================================
+
+# Para instalar pacotes opcionais, descomente as linhas desejadas
+# ou adicione novos pacotes conforme necessário.
+
+# Alguns pacotes podem requerer configuração adicional após instalação.
+
+# Para pacotes que não estão nos repositórios padrão do Alpine,
+# considere usar repositórios community ou edge. 

@@ -1,123 +1,115 @@
-# Alpine Linux Custom Images para Raspberry Pi 3B
+# Make ARM Custom Images
 
-Template para construir, customizar e exportar imagens bootáveis do Alpine Linux para Raspberry Pi 3B, com possibilidade de adaptação para outras distros/modelos no futuro.
+Projeto para compilar, personalizar e gerar imagens bootáveis de sistemas operacionais para Raspberry Pi, começando com Alpine Linux para Pi 3B.
 
-## Objetivo
+## 🎯 Objetivo
 
-Pipeline local para:
-- Baixar a base (Alpine armv7 para Pi 3B)
-- Montar em loop device
-- Aplicar customizações (Wi-Fi, Docker, Compose, pacotes)
-- Testar em QEMU (emulação aproximada)
-- Exportar .img final para gravar no SD (Balena Etcher)
+Criar uma pipeline local que produza imagens personalizadas para Raspberry Pi 3B a partir de Alpine Linux, testadas em QEMU e prontas para replicação em várias placas.
 
-## Pré-requisitos
+## 📁 Estrutura do Projeto
 
-- Ubuntu/Debian ou similar
-- Acesso root (sudo)
-- Conectividade com internet
-- 4GB+ espaço livre
+```
+make-arm-custom-images/
+├── docs/           # Documentação de uso e customização
+├── scripts/        # Scripts de build, configuração e testes
+├── configs/        # Arquivos de configuração de rede, pacotes e serviços
+├── output/         # Onde a imagem final .img será salva
+└── qemu/          # Configurações para teste da imagem em QEMU
+```
 
-## Instalação das Dependências
+## 🚀 Funcionalidades
 
+- ✅ Download automático da imagem base Alpine ARMv7 para Pi 3B
+- ✅ Montagem e personalização da imagem
+- ✅ Configuração automática de Wi-Fi
+- ✅ Instalação de pacotes adicionais (Docker, Docker Compose, etc.)
+- ✅ Configuração de serviços para iniciar no boot
+- ✅ Teste em emulação com QEMU
+- ✅ Geração de imagem final para gravação
+
+## 📋 Pré-requisitos
+
+### Dependências do Sistema
 ```bash
+# Ubuntu/Debian
 sudo apt update
-sudo apt install -y qemu qemu-system-arm qemu-utils parted kpartx dosfstools e2fsprogs \
-  wget curl xz-utils tar git unzip coreutils util-linux binfmt-support
+sudo apt install -y wget curl qemu-system-arm qemu-user-static \
+    parted dosfstools mtools squashfs-tools \
+    build-essential git
 ```
 
-## Uso Rápido
-
-1. **Configurar variáveis:**
+### Permissões
 ```bash
-cp .env.example .env
-nano .env
+# Adicionar usuário ao grupo sudo (se necessário)
+sudo usermod -aG sudo $USER
 ```
 
-2. **Executar build completo:**
+## 🛠️ Uso Rápido
+
+1. **Clone o repositório:**
+```bash
+git clone <repository-url>
+cd make-arm-custom-images
+```
+
+2. **Configure as variáveis de ambiente:**
+```bash
+cp env.example .env
+# Edite o arquivo .env com suas configurações
+```
+
+3. **Execute o build:**
 ```bash
 ./scripts/build.sh
 ```
 
-3. **Testar em QEMU (opcional):**
+4. **Teste a imagem em QEMU:**
 ```bash
 ./scripts/qemu-run.sh
 ```
 
-## Fluxo de Build
-
-```
-fetch_base.sh → mkimg.sh → mount.sh → customize.sh → unmount.sh
-```
-
-1. **fetch_base.sh**: Baixa Alpine armv7 tarball
-2. **mkimg.sh**: Cria imagem raw particionada (boot FAT32 + root ext4)
-3. **mount.sh**: Monta partições em loop device
-4. **customize.sh**: Aplica configs, pacotes e serviços
-5. **unmount.sh**: Desmonta e finaliza imagem
-
-## Configuração via .env
-
-O arquivo `.env` controla todas as variáveis do build:
-- Versão do Alpine
-- Configurações de rede/Wi-Fi
-- Pacotes a instalar
-- Parâmetros QEMU
-- Tamanho da imagem
-
-## Testes em QEMU
-
-⚠️ **Importante**: QEMU para Raspberry Pi não é 100% fiel ao hardware real. Usamos `-M raspi2` para smoke tests básicos. O teste final confiável é sempre no hardware real.
-
-Para testar:
+5. **Grave no SD Card:**
 ```bash
-./scripts/qemu-run.sh
-# Dentro da VM: poweroff
+# Use BalenaEtcher ou dd para gravar output/alpine-pi3b-custom.img
 ```
 
-## Gravação no SD Card
+## 📖 Documentação
 
-1. Use [Balena Etcher](https://www.balena.io/etcher/)
-2. Selecione `output/alpine-rpi3-custom.img`
-3. Escolha o SD card
-4. Grave
+- [Visão Geral](docs/00-visao-geral.md)
+- [Dependências do Host](docs/01-dependencias-host.md)
+- [Variáveis de Ambiente](docs/02-variaveis-env.md)
+- [Fluxo de Build](docs/03-fluxo-de-build.md)
+- [Testes em QEMU](docs/04-testes-em-qemu.md)
+- [Gravação no SD Card](docs/05-gravacao-sdcard.md)
 
-## Primeiro Boot no Hardware Real
+## 🔧 Customização
 
-1. Insira o SD no Pi 3B
-2. Conecte teclado/monitor ou SSH
-3. Login: `root` (sem senha inicial)
-4. Configure rede se necessário: `setup-interfaces`
-5. Atualize pacotes: `apk update && apk upgrade`
+### Pacotes Adicionais
+Edite `configs/packages.txt` para adicionar/remover pacotes.
 
-## Estrutura do Projeto
+### Configurações de Rede
+Configure Wi-Fi em `configs/wpa_supplicant.conf.tmpl`.
 
-```
-.
-├── README.md              # Este arquivo
-├── .env.example          # Template de variáveis
-├── docs/                 # Documentação detalhada
-├── configs/              # Configurações e templates
-├── scripts/              # Scripts de build
-├── qemu/                 # Arquivos QEMU
-└── output/               # Imagens finais
-```
+### Serviços
+Adicione serviços em `configs/services-openrc.txt`.
 
-## Próximos Passos
+## 🧪 Testes
 
-Para adaptar a outras distros/modelos:
+O projeto inclui suporte completo para testes em QEMU:
 
-1. **Outras distros**: Modifique `fetch_base.sh` e `customize.sh`
-2. **Outros modelos Pi**: Ajuste `mkimg.sh` e parâmetros QEMU
-3. **Arquiteturas diferentes**: Adapte scripts para arm64, x86, etc.
+- Emulação do Raspberry Pi 3B
+- Teste de login e rede
+- Verificação de serviços
+- Debug de problemas antes da gravação
 
-## Troubleshooting
+## 📝 Licença
 
-- **Erro de permissão**: Execute scripts com `sudo`
-- **Loop device ocupado**: Use `./scripts/unmount.sh` para limpar
-- **QEMU não inicia**: Verifique dependências e kernel disponível
-- **Imagem não boota**: Teste em hardware real, QEMU é limitado
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para detalhes.
 
-## Licença
+## 🤝 Contribuição
 
-MIT License - veja [LICENSE](LICENSE) para detalhes. 
+Contribuições são bem-vindas! Por favor, leia as diretrizes de contribuição antes de submeter pull requests.
+
+## 📞 Suporte
+
+Para dúvidas e problemas, abra uma issue no repositório do projeto. 
