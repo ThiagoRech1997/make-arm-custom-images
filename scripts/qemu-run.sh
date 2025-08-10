@@ -131,6 +131,10 @@ mount_image_for_qemu() {
     local loop_device=$(losetup --find --show "$IMAGE_PATH")
     log_info "Usando loop device: $loop_device"
     
+    # Atualizar tabela de partições
+    partprobe "$loop_device"
+    sleep 2  # Aguardar criação dos dispositivos de partição
+    
     # Montar partição root
     local mount_point="$QEMU_TEMP_DIR/mount"
     mkdir -p "$mount_point"
@@ -173,7 +177,6 @@ start_qemu() {
         -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw"
         -net nic
         -net user,hostfwd=tcp::"$QEMU_SSH_PORT"-:22
-        -serial stdio
         -nographic
         -pidfile "$QEMU_PID_FILE"
     )

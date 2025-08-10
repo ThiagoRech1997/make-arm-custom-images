@@ -57,7 +57,7 @@ check_prerequisites() {
     fi
     
     # Verificar dependências do sistema
-    local deps=("wget" "curl" "qemu-system-arm" "parted" "dosfstools" "mount")
+    local deps=("wget" "curl" "qemu-system-arm" "parted" "mount")
     for dep in "${deps[@]}"; do
         if ! command -v "$dep" &> /dev/null; then
             log_error "Dependência não encontrada: $dep"
@@ -65,6 +65,13 @@ check_prerequisites() {
             exit 1
         fi
     done
+    
+    # Verificar dosfstools especificamente
+    if ! command -v "mkfs.fat" &> /dev/null; then
+        log_error "Dependência não encontrada: dosfstools (mkfs.fat)"
+        log_info "Execute: sudo apt install -y dosfstools"
+        exit 1
+    fi
     
     # Verificar espaço em disco
     local required_space=$((IMAGE_SIZE_MB * 3))  # 3x o tamanho da imagem
@@ -102,7 +109,7 @@ prepare_directories() {
 download_base_image() {
     log_info "Baixando imagem base Alpine Linux..."
     
-    local tarball_name="${ALPINE_VARIANT}-${ALPINE_VERSION}-${ALPINE_ARCH}.tar.gz"
+    local tarball_name="${ALPINE_VARIANT}-${ALPINE_VERSION}.1-${ALPINE_ARCH}.tar.gz"
     local download_url="${ALPINE_BASE_URL}/${tarball_name}"
     local local_path="$WORK_DIR/$tarball_name"
     
@@ -152,6 +159,21 @@ create_partitioned_image() {
     # Criar partição root (ext4, resto do espaço)
     parted "$img_path" mkpart primary ext4 257MiB 100%
     
+    # Encontrar loop device para formatação
+    local loop_device=$(losetup --find --show "$img_path")
+    log_info "Formatando partições usando loop device: $loop_device"
+    
+    # Atualizar tabela de partições
+    partprobe "$loop_device"
+    sleep 2
+    
+    # Formatar partições
+    mkfs.vfat -F32 "${loop_device}p1"  # Partição boot
+    mkfs.ext4 -F "${loop_device}p2"    # Partição root
+    
+    # Desconectar loop device
+    losetup -d "$loop_device"
+    
     log_success "Imagem particionada criada"
 }
 
@@ -167,12 +189,16 @@ mount_and_prepare_filesystem() {
     local loop_device=$(losetup --find --show "$img_path")
     log_info "Usando loop device: $loop_device"
     
+    # Atualizar tabela de partições
+    partprobe "$loop_device"
+    sleep 2  # Aguardar criação dos dispositivos de partição
+    
     # Montar partições
     mkdir -p "$mount_point"
     mount "${loop_device}p2" "$mount_point"  # Partição root
     
     # Extrair Alpine para rootfs
-    local tarball_name="${ALPINE_VARIANT}-${ALPINE_VERSION}-${ALPINE_ARCH}.tar.gz"
+    local tarball_name="${ALPINE_VARIANT}-${ALPINE_VERSION}.1-${ALPINE_ARCH}.tar.gz"
     local tarball_path="$WORK_DIR/$tarball_name"
     
     log_info "Extraindo Alpine Linux..."
@@ -207,6 +233,7 @@ apply_customizations() {
     
     # Configurar locale
     if [[ -n "$LOCALE" ]]; then
+        mkdir -p "$mount_point/etc/env.d"
         echo "LANG=$LOCALE" > "$mount_point/etc/env.d/99locale"
     fi
     
@@ -248,6 +275,7 @@ EOF
     if [[ -n "$WIFI_SSID" && -n "$WIFI_PASSWORD" ]]; then
         log_info "Configurando Wi-Fi: $WIFI_SSID"
         
+        mkdir -p "$mount_point/etc/wpa_supplicant"
         cat > "$mount_point/etc/wpa_supplicant/wpa_supplicant.conf" << EOF
 country=$WIFI_COUNTRY
 ctrl_interface=/var/run/wpa_supplicant
