@@ -1,0 +1,11 @@
+bash
+busybox-extras
+e2fsprogs
+haveged
+openssh
+wpa_supplicant
+wireless-tools
+ca-certificates
+curl
+nano
+git 

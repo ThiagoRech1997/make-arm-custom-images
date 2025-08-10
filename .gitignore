@@ -1,0 +1,16 @@
+# Imagens e arquivos de saída
+output/
+*.img
+*.tar.gz
+*.xz
+*.zip
+
+# Logs
+*.log
+
+# Arquivos temporários
+tmp/
+.env
+
+# Arquivos de configuração local
+# .env.example  # Este arquivo DEVE ser commitado como template 

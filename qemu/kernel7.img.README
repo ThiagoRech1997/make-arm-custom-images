@@ -1,0 +1,63 @@
+# kernel7.img - Nota sobre Kernel do Raspberry Pi
+
+## Sobre este arquivo
+
+Este arquivo **NÃO** está sendo distribuído aqui por questões de licenciamento e tamanho.
+
+## O que é kernel7.img?
+
+O `kernel7.img` é o kernel específico do Raspberry Pi 3B, compilado para ARMv7 com suporte ao hardware específico do Pi.
+
+## Como obter
+
+### Opção 1: Download oficial
+```bash
+# Baixar do repositório oficial do Raspberry Pi
+wget https://github.com/raspberrypi/firmware/raw/master/boot/kernel7.img
+```
+
+### Opção 2: Extrair de imagem oficial
+```bash
+# Montar imagem oficial do Raspberry Pi OS
+sudo mount -o loop,offset=4194304 raspios.img /mnt
+cp /mnt/kernel7.img ./
+sudo umount /mnt
+```
+
+### Opção 3: Compilar
+```bash
+# Clonar repositório do kernel
+git clone https://github.com/raspberrypi/linux.git
+cd linux
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bcm2709_defconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j4
+```
+
+## Uso com QEMU
+
+Para usar com QEMU, modifique o script `qemu-run.sh`:
+
+```bash
+# Substituir linha do kernel
+-kernel kernel7.img \
+```
+
+## Limitações
+
+- **Tamanho**: ~40MB
+- **Licenciamento**: GPL
+- **Compatibilidade**: Específico para Pi 3B
+- **QEMU**: Pode não funcionar perfeitamente
+
+## Alternativas
+
+Para testes em QEMU, recomendamos usar o kernel genérico:
+```bash
+-kernel /usr/lib/qemu/arm/kernel-nographic.elf \
+```
+
+## Referências
+
+- [Raspberry Pi Firmware](https://github.com/raspberrypi/firmware)
+- [Raspberry Pi Kernel](https://github.com/raspberrypi/linux)
+- [QEMU Raspberry Pi](https://www.raspberrypi.org/documentation/usage/qemu/) 

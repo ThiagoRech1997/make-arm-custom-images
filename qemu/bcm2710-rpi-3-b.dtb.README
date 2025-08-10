@@ -1,0 +1,64 @@
+# bcm2710-rpi-3-b.dtb - Device Tree Blob do Raspberry Pi 3B
+
+## Sobre este arquivo
+
+Este arquivo **NÃO** está sendo distribuído aqui por questões de licenciamento e tamanho.
+
+## O que é bcm2710-rpi-3-b.dtb?
+
+O `bcm2710-rpi-3-b.dtb` é o Device Tree Blob específico do Raspberry Pi 3B, que descreve o hardware e periféricos do dispositivo para o kernel Linux.
+
+## Como obter
+
+### Opção 1: Download oficial
+```bash
+# Baixar do repositório oficial do Raspberry Pi
+wget https://github.com/raspberrypi/firmware/raw/master/boot/bcm2710-rpi-3-b.dtb
+```
+
+### Opção 2: Extrair de imagem oficial
+```bash
+# Montar imagem oficial do Raspberry Pi OS
+sudo mount -o loop,offset=4194304 raspios.img /mnt
+cp /mnt/bcm2710-rpi-3-b.dtb ./
+sudo umount /mnt
+```
+
+### Opção 3: Compilar
+```bash
+# Clonar repositório do kernel
+git clone https://github.com/raspberrypi/linux.git
+cd linux
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bcm2709_defconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- dtbs
+```
+
+## Uso com QEMU
+
+Para usar com QEMU, modifique o script `qemu-run.sh`:
+
+```bash
+# Adicionar device tree
+-dtb bcm2710-rpi-3-b.dtb \
+```
+
+## Limitações
+
+- **Tamanho**: ~20KB
+- **Licenciamento**: GPL
+- **Compatibilidade**: Específico para Pi 3B
+- **QEMU**: Pode não funcionar perfeitamente
+
+## Alternativas
+
+Para testes em QEMU, o device tree é opcional:
+```bash
+# QEMU pode funcionar sem device tree específico
+# O kernel genérico já inclui device tree básico
+```
+
+## Referências
+
+- [Raspberry Pi Firmware](https://github.com/raspberrypi/firmware)
+- [Device Tree Documentation](https://www.devicetree.org/)
+- [Raspberry Pi Device Trees](https://www.raspberrypi.org/documentation/configuration/device-tree.md) 
